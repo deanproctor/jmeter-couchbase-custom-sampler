@@ -1,9 +1,9 @@
 #Custom JMeter sampler for Couchbase
 
 This is a custom java sampler class that can be used to benchmark Couchbase.
-It was tested against Couchbase Enterprise 2.5.1
+It was tested against Couchbase Enterprise 3.0.3
 
-Version 0.1 (alpha) 
+Version 0.2 (alpha) 
  
 Written by: Alex Bordei Bigstep
 (alex at bigstep dt com)
@@ -16,13 +16,9 @@ Written by: Alex Bordei Bigstep
 Copy the file over inside the sources. 
 You will need to copy over ./lib/opt and ./lib. some of the jars from the SDK. You need to also copy them in both locations.For some reason the compilation works but the jars from/opt do not get distributed.
 
-* commons-codec-1.5.jar
-* couchbase-client-1.4.3.jar
-* httpcore-4.3.jar 
-* httpcore-nio-4.3.jar 
-* jettison-1.1.jar
-* netty-3.5.5.Final.jar
-* spymemcached-2.11.4.jar
+* couchbase-core-io-1.1.2.jar
+* couchbase-java-client-2.1.2.jar
+* rxjava-1.0.4.jar
 
 ```
 ant package-only

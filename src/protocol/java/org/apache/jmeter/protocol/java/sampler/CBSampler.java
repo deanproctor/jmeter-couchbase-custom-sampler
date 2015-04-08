@@ -1,11 +1,11 @@
 package com.bigstep;
 
- 
-import com.couchbase.client.CouchbaseClient;
-import com.couchbase.client.CouchbaseConnectionFactoryBuilder;
-import com.couchbase.client.protocol.views.View;
-import com.couchbase.client.protocol.views.ViewResponse;
-import com.couchbase.client.protocol.views.Query;
+import com.couchbase.client.java.Bucket;
+import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.CouchbaseCluster;
+import com.couchbase.client.java.document.StringDocument;
+import com.couchbase.client.java.env.CouchbaseEnvironment;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 
 import java.io.Serializable;
 import java.io.File;
@@ -14,8 +14,6 @@ import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
-
-
 
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
@@ -26,36 +24,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
-//import java.util.logging.Logger;
  
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.IOException;
  
 public class CBSampler extends AbstractJavaSamplerClient implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     private static final org.apache.log.Logger log = LoggingManager.getLoggerForClass();
-    private CouchbaseClient client = null;
-   private  byte[] putContents=null;
+    private Cluster cluster = null;
+    private Bucket bucket = null;
+    private String putContents = null;
  
     // set up default arguments for the JMeter GUI
     @Override
     public Arguments getDefaultParameters() {
         Arguments defaultParameters = new Arguments();
         defaultParameters.addArgument("method", "GET");
-        defaultParameters.addArgument("servers", "http://127.0.0.1:8091/pools");
+        defaultParameters.addArgument("servers", "127.0.0.1");
         defaultParameters.addArgument("bucket", "default");
         defaultParameters.addArgument("password", "");
         defaultParameters.addArgument("key", "");
         defaultParameters.addArgument("local_file_path", "");
         defaultParameters.addArgument("value", "");
-        defaultParameters.addArgument("queue_max_block_time", "5000");
+        defaultParameters.addArgument("bootstrap_carrier_direct_port", "11210");
         defaultParameters.addArgument("timeout", "10000");
-        defaultParameters.addArgument("designdoc", "");
-        defaultParameters.addArgument("viewname", "");
-        defaultParameters.addArgument("limit", "10");
         defaultParameters.addArgument("debug", "true");
-        defaultParameters.addArgument("include_docs", "true");
 
         return defaultParameters;
     }
@@ -66,101 +60,79 @@ public class CBSampler extends AbstractJavaSamplerClient implements Serializable
 	String debug = context.getParameter( "debug" );
 	if(debug=="false")	
 	{
-
-		Properties systemProperties = System.getProperties();
-		System.setProperty("net.spy.log.LoggerImpl", "net.spy.memcached.compat.log.SunLogger");
-		System.setProperties(systemProperties);
-
-		java.util.logging.Logger.getLogger("net.spy.memcached").setLevel(Level.SEVERE);
 		java.util.logging.Logger.getLogger("com.couchbase.client").setLevel(Level.SEVERE);
-		java.util.logging.Logger.getLogger("com.couchbase.client.vbucket").setLevel(Level.SEVERE);
 	}
 		
 	try
 	{
 		String servers = context.getParameter( "servers" );
 		String password = context.getParameter( "password" );
-		String bucket = context.getParameter( "bucket" );
+		String mybucket = context.getParameter( "bucket" );
 		String method = context.getParameter( "method" );
 		String file = context.getParameter( "local_file_path" );
-		int max_block_time = Integer.parseInt(context.getParameter( "queue_max_block_time" ));
+		int bootstrap_carrier_direct_port = Integer.parseInt(context.getParameter( "bootstrap_carrier_direct_port" ));
 		int timeout = Integer.parseInt(context.getParameter( "timeout" ));
 
 		if(method.equals("PUT"))
-			putContents= Files.readAllBytes(Paths.get(file));	
+			putContents = Files.readAllBytes(Paths.get(file)).toString();	
 
-		    // (Subset) of nodes in the cluster to establish a connection
-
-		List<URI> hosts= new ArrayList<URI>();
+	   	// (Subset) of nodes in the cluster to establish a connection
+		List<String> hosts= new ArrayList<String>();
 		
 		String[] arrServers=servers.split(","); 
 		for(String server: arrServers)
-			hosts.add(new URI(server));
+			hosts.add(new String(server));
 		
-		CouchbaseConnectionFactoryBuilder cfb = new CouchbaseConnectionFactoryBuilder();
-	        cfb.setOpQueueMaxBlockTime(max_block_time);
-		cfb.setOpTimeout(timeout);
+		CouchbaseEnvironment env = DefaultCouchbaseEnvironment.builder()
+		  .bootstrapCarrierDirectPort(bootstrap_carrier_direct_port)
+		  .kvTimeout(timeout)
+		  .connectTimeout(timeout)
+		  .build();
 	
-		client =  new CouchbaseClient(cfb.buildCouchbaseConnection(hosts, bucket, password,""));
+		cluster = CouchbaseCluster.create(env, hosts);
+		bucket = cluster.openBucket(mybucket, password);
 	}
 	catch(Exception ex)
 	{
             java.io.StringWriter stringWriter = new java.io.StringWriter();
             ex.printStackTrace( new java.io.PrintWriter( stringWriter ) );
 
-	     log.error("setupTest:"+ex.getMessage()+stringWriter.toString());
- 
+	    log.error("setupTest:"+ex.getMessage()+stringWriter.toString());
 	}
-			
     }
     
     @Override	
     public void teardownTest(JavaSamplerContext context)
     {
-	if(null!=client)
-		client.shutdown();		
+	if(null!=cluster)
+		cluster.disconnect();		
     }
  
     @Override
     public SampleResult runTest(JavaSamplerContext context) {
 
-        String key = context.getParameter( "key" );
-        String value = context.getParameter( "value" );
-        String method = context.getParameter( "method" );
-        String designDoc = context.getParameter( "designdoc" );
-        String viewName = context.getParameter( "viewname" );
-        int limit = Integer.parseInt(context.getParameter( "limit" ));
-	boolean includeDocs = context.getParameter( "include_docs").equals("true");
+        String key = context.getParameter("key");
+        String value = context.getParameter("value");
+        String method = context.getParameter("method");
         
 	SampleResult result = new SampleResult();
         result.sampleStart(); // start stopwatch
 
-         
         try {
-
-		if(null==client)
-			throw new Exception("CB Client not initialised");
+	    if(null==bucket)
+	       throw new Exception("CB Client not initialised");
 
 	    long startTime=System.nanoTime();	
 
 	    if(method.equals("GET"))	
-	 	   client.get(key);
+		bucket.get(key, StringDocument.class);
 	    else 
 		if(method.equals("PUT"))
 		{
-			if(value!="")
-				client.set(key,value);
-			else
-		    		client.set(key,putContents);
-		}
-		else
-		if (method.equals("QUERY"))
-		{
-			View view = client.getView(designDoc, viewName);
-			Query query = new Query();
-			query.setIncludeDocs(includeDocs);
-			query.setLimit(limit);
-			ViewResponse response = client.query(view, query);
+		  if(value == "")
+		    value = putContents;
+
+		    bucket.upsert(StringDocument.create(key, value));
 		}
 
 	    long endTime=System.nanoTime();

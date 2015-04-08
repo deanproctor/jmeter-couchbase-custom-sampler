@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="2.6" jmeter="${implementation.version}">
+<jmeterTestPlan version="1.2" properties="2.6" jmeter="2.11.20150407">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -15,9 +15,9 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">100000</stringProp>
+          <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">20</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1405939273000</longProp>
         <longProp name="ThreadGroup.end_time">1405939273000</longProp>
@@ -26,7 +26,7 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Java Request" enabled="true">
+        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Java Request" enabled="false">
           <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="method" elementType="Argument">
@@ -36,7 +36,7 @@
               </elementProp>
               <elementProp name="servers" elementType="Argument">
                 <stringProp name="Argument.name">servers</stringProp>
-                <stringProp name="Argument.value">http://192.168.56.103:8091/pools</stringProp>
+                <stringProp name="Argument.value">192.168.56.101</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="bucket" elementType="Argument">
@@ -56,7 +56,7 @@
               </elementProp>
               <elementProp name="local_file_path" elementType="Argument">
                 <stringProp name="Argument.name">local_file_path</stringProp>
-                <stringProp name="Argument.value">/Users/dean/jmeter/data.json</stringProp>
+                <stringProp name="Argument.value">/Users/dean/jmeter2/data.json</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="value" elementType="Argument">
@@ -64,9 +64,9 @@
                 <stringProp name="Argument.value">${adata}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
-              <elementProp name="queue_max_block_time" elementType="Argument">
-                <stringProp name="Argument.name">queue_max_block_time</stringProp>
-                <stringProp name="Argument.value">5000</stringProp>
+              <elementProp name="bootstrap_carrier_direct_port" elementType="Argument">
+                <stringProp name="Argument.name">bootstrap_carrier_direct_port</stringProp>
+                <stringProp name="Argument.value">8200</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="timeout" elementType="Argument">
@@ -74,28 +74,13 @@
                 <stringProp name="Argument.value">10000</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
-              <elementProp name="designdoc" elementType="Argument">
-                <stringProp name="Argument.name">designdoc</stringProp>
-                <stringProp name="Argument.value">test</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="viewname" elementType="Argument">
-                <stringProp name="Argument.name">viewname</stringProp>
-                <stringProp name="Argument.value">test</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="limit" elementType="Argument">
-                <stringProp name="Argument.name">limit</stringProp>
-                <stringProp name="Argument.value">100</stringProp>
+              <elementProp name="async" elementType="Argument">
+                <stringProp name="Argument.name">async</stringProp>
+                <stringProp name="Argument.value">false</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="debug" elementType="Argument">
                 <stringProp name="Argument.name">debug</stringProp>
-                <stringProp name="Argument.value">true</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="include_docs" elementType="Argument">
-                <stringProp name="Argument.name">include_docs</stringProp>
                 <stringProp name="Argument.value">true</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
@@ -114,7 +99,7 @@
               </elementProp>
               <elementProp name="servers" elementType="Argument">
                 <stringProp name="Argument.name">servers</stringProp>
-                <stringProp name="Argument.value">http://192.168.56.103:8091/pools</stringProp>
+                <stringProp name="Argument.value">192.168.56.101</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="bucket" elementType="Argument">
@@ -134,7 +119,7 @@
               </elementProp>
               <elementProp name="local_file_path" elementType="Argument">
                 <stringProp name="Argument.name">local_file_path</stringProp>
-                <stringProp name="Argument.value">/Users/dean/jmeter/data.json</stringProp>
+                <stringProp name="Argument.value">/Users/dean/jmeter2/data.json</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="value" elementType="Argument">
@@ -142,9 +127,9 @@
                 <stringProp name="Argument.value">${adata}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
-              <elementProp name="queue_max_block_time" elementType="Argument">
-                <stringProp name="Argument.name">queue_max_block_time</stringProp>
-                <stringProp name="Argument.value">5000</stringProp>
+              <elementProp name="bootstrap_carrier_direct_port" elementType="Argument">
+                <stringProp name="Argument.name">bootstrap_carrier_direct_port</stringProp>
+                <stringProp name="Argument.value">8200</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="timeout" elementType="Argument">
@@ -152,28 +137,13 @@
                 <stringProp name="Argument.value">10000</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
-              <elementProp name="designdoc" elementType="Argument">
-                <stringProp name="Argument.name">designdoc</stringProp>
-                <stringProp name="Argument.value">test</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="viewname" elementType="Argument">
-                <stringProp name="Argument.name">viewname</stringProp>
-                <stringProp name="Argument.value">test</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="limit" elementType="Argument">
-                <stringProp name="Argument.name">limit</stringProp>
-                <stringProp name="Argument.value">100</stringProp>
+              <elementProp name="async" elementType="Argument">
+                <stringProp name="Argument.name">async</stringProp>
+                <stringProp name="Argument.value">false</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="debug" elementType="Argument">
                 <stringProp name="Argument.name">debug</stringProp>
-                <stringProp name="Argument.value">true</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="include_docs" elementType="Argument">
-                <stringProp name="Argument.name">include_docs</stringProp>
                 <stringProp name="Argument.value">true</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
@@ -205,6 +175,63 @@
         </CSVDataSet>
         <hashTree/>
       </hashTree>
+      <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+          </value>
+        </objProp>
+        <objProp>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+          </value>
+        </objProp>
+        <stringProp name="filename">/tmp/1.csv</stringProp>
+      </ResultCollector>
+      <hashTree/>
     </hashTree>
   </hashTree>
 </jmeterTestPlan>
