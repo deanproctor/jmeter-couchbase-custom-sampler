@@ -9,8 +9,8 @@ Written by: Alex Bordei Bigstep
 (alex at bigstep dt com)
 
 ##Dependencies:
-* apache jmeter sources 2.11 
-* couchbase java client 
+* apache jmeter sources 2.11 [Link](https://archive.apache.org/dist/jmeter/source/apache-jmeter-2.11_src.tgz) 
+* couchbase java client [Link](http://packages.couchbase.com/clients/java/2.1.2/Couchbase-Java-Client-2.1.2.zip)
 
 ##How to use
 Copy the file over inside the sources. 
