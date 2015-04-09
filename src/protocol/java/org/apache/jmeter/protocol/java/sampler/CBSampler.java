@@ -1,5 +1,9 @@
 package com.bigstep;
 
+import rx.Observable;
+import rx.Subscription;
+import rx.functions.Func1;
+
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
@@ -23,6 +27,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
  
 import java.nio.file.Files;
@@ -35,6 +40,7 @@ public class CBSampler extends AbstractJavaSamplerClient implements Serializable
     private Cluster cluster = null;
     private Bucket bucket = null;
     private String putContents = null;
+    private Boolean async = false;
  
     // set up default arguments for the JMeter GUI
     @Override
@@ -49,6 +55,7 @@ public class CBSampler extends AbstractJavaSamplerClient implements Serializable
         defaultParameters.addArgument("value", "");
         defaultParameters.addArgument("bootstrap_carrier_direct_port", "11210");
         defaultParameters.addArgument("timeout", "10000");
+        defaultParameters.addArgument("async", "false");
         defaultParameters.addArgument("debug", "true");
 
         return defaultParameters;
@@ -72,6 +79,8 @@ public class CBSampler extends AbstractJavaSamplerClient implements Serializable
 		String file = context.getParameter( "local_file_path" );
 		int bootstrap_carrier_direct_port = Integer.parseInt(context.getParameter( "bootstrap_carrier_direct_port" ));
 		int timeout = Integer.parseInt(context.getParameter( "timeout" ));
+
+		async = Boolean.valueOf(context.getParameter( "async" ));
 
 		if(method.equals("PUT"))
 			putContents = Files.readAllBytes(Paths.get(file)).toString();	
@@ -125,14 +134,28 @@ public class CBSampler extends AbstractJavaSamplerClient implements Serializable
 	    long startTime=System.nanoTime();	
 
 	    if(method.equals("GET"))	
-		bucket.get(key, StringDocument.class);
+	      if(async)
+		bucket
+		  .async()
+		  .get(key,StringDocument.class)
+		  .timeout(2, TimeUnit.SECONDS)
+		  .subscribe();
+	      else
+		bucket.get(key,StringDocument.class);
 	    else 
 		if(method.equals("PUT"))
 		{
 		  if(value == "")
 		    value = putContents;
 
-		    bucket.upsert(StringDocument.create(key, value));
+		    if(async)
+		      bucket
+			.async()
+			.upsert(StringDocument.create(key, value))
+			.timeout(2, TimeUnit.SECONDS)
+			.subscribe();
+		    else
+		      bucket.upsert(StringDocument.create(key, value));
 		}
 
 	    long endTime=System.nanoTime();
