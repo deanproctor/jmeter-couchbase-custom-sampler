@@ -1,37 +1,48 @@
-#Custom JMeter sampler for Couchbase
+# Custom JMeter sampler for Couchbase
 
-This is a custom java sampler class that can be used to benchmark Couchbase.
-It was tested against Couchbase Enterprise 3.0.3
+This is a custom Java sampler class that can be used to benchmark Couchbase.
+It was tested against Couchbase Enterprise 4.0.0-rc0.
 
-Version 0.2 (alpha) 
- 
-Written by: Alex Bordei Bigstep
-(alex at bigstep dt com)
+**Version** 0.3 (alpha)
 
-##Dependencies:
-* apache jmeter sources 2.11 [Link](https://archive.apache.org/dist/jmeter/source/apache-jmeter-2.11_src.tgz) 
-* couchbase java client [Link](http://packages.couchbase.com/clients/java/2.1.2/Couchbase-Java-Client-2.1.2.zip)
+Originally written by: Alex Bordei, Bigstep  
+(alex at bigstep dot com)
 
-##How to use
-Copy the file over inside the sources. 
-You will need to copy over ./lib/opt and ./lib. some of the jars from the SDK. You need to also copy them in both locations.For some reason the compilation works but the jars from/opt do not get distributed.
+Modified by: Jordan Moore, Avalon Consulting, LLC  
+(moorej at avalonconsult dot com)
 
-* couchbase-core-io-1.1.2.jar
-* couchbase-java-client-2.1.2.jar
-* rxjava-1.0.4.jar
+## Dependencies:
+* Apache JMeter Sources 2.13 - [Link](http://archive.apache.org/dist/jmeter/source/apache-jmeter-2.13_src.zip)
+* Couchbase Java Client 2.2.0 - [Link](http://packages.couchbase.com/clients/java/2.2.0/Couchbase-Java-Client-2.2.0.zip)
 
-```
-ant package-only
-```
-Run jmeter as ususual from the newly created bin file. 
-```
-sh ./bin/jmeter.sh 
-```
+## Install
 
-Add a new jmeter Java sampler, use the com.bigstep.CBSampler class.
+The compilation step only needs ran once, so the JMeter binary may also work.  
+If code modifications are made to this sampler, repeat steps 2-4 and recreate the sampler in JMeter.  
+
+1. Compile and build the JMeter source:
+
+        $JMETER_HOME/ant download_jars
+        $JMETER_HOME/ant
+
+2. Build the extension:
+
+        mvn clean package
+
+3. Install the extension into `$JMETER_HOME/lib/ext`:
+
+        cp target/couchbasemeter-x.y.z.jar $JMETER_HOME/lib/ext
+
+4. Run JMeter as usual from the newly created bin file:
+
+        sh $JMETER_HOME/bin/jmeter.sh
+
+## How to use
+
+Add a new JMeter Java sampler, use the com.avalonconsult.sampler.CBSampler class.
 ![Alt text](/img/jmeter1.png?raw=true "Select jmeter custom sampler")
 
-Configure your couchbase credentials and everything
+Configure your Couchbase credentials and additional parameters
 ![Alt text](/img/jmeter2.png?raw=true "Configure jmeter sampler")
 
-The response times of most Couchbase installations are sub-millisecond and thus jmeter by default will only record 0 for sub millisecond samples making any graphing or higher resolution analysis useless. What we did was to implement a nanosecond time counter inside the sampler that is returned as a message on the 5th column of the output csv. We use System.nanoTime() for this. 
+The response times of most Couchbase installations are sub-millisecond and thus JMeter by default will only record 0 for sub millisecond samples making any graphing or higher resolution analysis useless. What we did was to implement a nanosecond time counter inside the sampler that is returned as a message on the 5th column of the output csv. We use System.nanoTime() for this.
